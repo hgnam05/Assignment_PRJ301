@@ -40,7 +40,7 @@
                 <% for (Student s : students) {
                 %>
                 <tr>
-                    <td><%=s.getSname()%></td>
+                    <td><%=s.getSname()%><input type="hidden" value="<%= s.getSid()%>" name="id" /></td>
                     <td style="text-align: center;"><input type="checkbox" name="present<%=s.getSid()%>" value="present" /></td>
                 </tr>
                 <%}%>

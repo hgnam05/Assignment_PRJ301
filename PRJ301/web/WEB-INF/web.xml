@@ -10,7 +10,7 @@
     </servlet>
     <servlet>
         <servlet-name>Attendance</servlet-name>
-        <servlet-class>controller.Attendance</servlet-class>
+        <servlet-class>controller.AttendanceController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>abc</servlet-name>

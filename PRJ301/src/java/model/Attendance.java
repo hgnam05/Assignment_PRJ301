@@ -16,9 +16,9 @@ public class Attendance {
     private int sid;
     private Date adate;
     private int tid;
-    private String present;
+    private boolean present;
 
-    public Attendance(int aid, int sid, Date adate, int tid, String present) {
+    public Attendance(int aid, int sid, Date adate, int tid, boolean present) {
         this.aid = aid;
         this.sid = sid;
         this.adate = adate;
@@ -61,11 +61,11 @@ public class Attendance {
         this.tid = tid;
     }
 
-    public String getPresent() {
+    public boolean isPresent() {
         return present;
     }
 
-    public void setPresent(String present) {
+    public void setPresent(boolean present) {
         this.present = present;
     }
     

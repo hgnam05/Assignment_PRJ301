@@ -5,6 +5,7 @@
  */
 package controller;
 
+import dal.AttendanceDBContext;
 import dal.ClassDBContext;
 import dal.StudentDBContext;
 import dal.TimeDBContext;
@@ -16,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.Attendance;
 import model.ClassEntity;
 import model.Student;
 import model.Time;
@@ -24,7 +26,7 @@ import model.Time;
  *
  * @author namdh
  */
-public class Attendance extends HttpServlet {
+public class AttendanceController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -74,6 +76,19 @@ public class Attendance extends HttpServlet {
             throws ServletException, IOException {
         Date date = Date.valueOf(request.getParameter("date"));
         int tid = Integer.parseInt(request.getParameter("tid"));
+        String[] sids = request.getParameterValues("id");
+        ArrayList<Attendance> atts = new ArrayList<>();
+        for (String id : sids) {
+            Attendance at = new Attendance();
+            at.setSid(Integer.parseInt(id));
+            at.setAdate(date);
+            at.setTid(tid);
+            at.setPresent(request.getParameter("present"+id)!=null);
+            atts.add(at);
+        }
+        AttendanceDBContext db = new AttendanceDBContext();
+        db.insert(atts);
+        response.getWriter().println("Done"); 
     }
 
     /**
