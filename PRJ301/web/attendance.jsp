@@ -23,14 +23,15 @@
     <body>
         <h1><%= c.getName()%></h1>
         <form method="post" style="margin: 0 auto">
+            <input type="hidden" value="<%= c.getCid()%>" name="cid" />
             <div style="display: flex">
-                Time: <select name="tid" style="margin-right: 10px">
+                Time: <select required="true" name="tid" style="margin-right: 10px">
                     <% for (Time t : times) {
                     %>
                     <option value="<%=t.getTid()%>"><%=t.getTname()%></option>
                     <%}%>
                 </select>
-                Date: <input type="date" name="date"/>
+                Date: <input type="date" required="true" name="date"/>
             </div>
             <table>
                 <tr>

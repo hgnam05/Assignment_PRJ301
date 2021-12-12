@@ -30,8 +30,6 @@ public class ClassController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -44,7 +42,7 @@ public class ClassController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-                ClassDBContext db = new ClassDBContext();
+        ClassDBContext db = new ClassDBContext();
         ArrayList<ClassEntity> classes = db.getAll();
         request.setAttribute("classes", classes);
         request.getRequestDispatcher("home.jsp").forward(request, response);

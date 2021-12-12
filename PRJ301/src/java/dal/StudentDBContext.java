@@ -29,7 +29,7 @@ public class StudentDBContext extends DBContext<Student> {
             PreparedStatement stm = connection.prepareStatement(sql);
             stm.setInt(1, id);
             ResultSet rs = stm.executeQuery();
-            while (rs.next()) {                
+            while (rs.next()) {
                 Student s = new Student();
                 s.setSid(rs.getInt("sid"));
                 s.setSname(rs.getString("sname"));
@@ -42,5 +42,27 @@ public class StudentDBContext extends DBContext<Student> {
             Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
         return students;
+    }
+
+    public Student getStudentById(int id) {
+        Student s = new Student();
+        try {
+            String sql = "SELECT s.sid,s.sname,s.gender,s.dob,s.cid\n"
+                    + "FROM Student s \n"
+                    + "WHERE s.sid = ?";
+            PreparedStatement stm = connection.prepareStatement(sql);
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                s.setSid(rs.getInt("sid"));
+                s.setSname(rs.getString("sname"));
+                s.setGender(rs.getBoolean("gender"));
+                s.setDob(rs.getDate("dob"));
+                s.setCid(rs.getInt("cid"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return s;
     }
 }

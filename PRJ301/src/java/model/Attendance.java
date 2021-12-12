@@ -16,18 +16,29 @@ public class Attendance {
     private int sid;
     private Date adate;
     private int tid;
+    private int cid;
     private boolean present;
 
-    public Attendance(int aid, int sid, Date adate, int tid, boolean present) {
+    public Attendance(int aid, int sid, Date adate, int tid, int cid, boolean present) {
         this.aid = aid;
         this.sid = sid;
         this.adate = adate;
         this.tid = tid;
+        this.cid = cid;
         this.present = present;
     }
 
     public Attendance() {
     }
+
+    public int getCid() {
+        return cid;
+    }
+
+    public void setCid(int cid) {
+        this.cid = cid;
+    }
+
 
     public int getAid() {
         return aid;

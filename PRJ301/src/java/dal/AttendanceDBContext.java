@@ -18,25 +18,28 @@ import java.util.logging.Logger;
  */
 public class AttendanceDBContext extends DBContext<Attendance> {
 
-    public void insert(ArrayList<Attendance> atts) {
+    public ArrayList<Attendance> insert(ArrayList<Attendance> atts) {
         try {
             connection.setAutoCommit(false);
             String sql = "INSERT INTO [Attendance]\n"
                     + "           ([sid]\n"
                     + "           ,[adate]\n"
                     + "           ,[tid]\n"
-                    + "           ,[present])\n"
+                    + "           ,[present]\n"
+                    + "           ,[cid])\n"
                     + "     VALUES\n"
-                    + "           (?, ?, ?, ?)";
+                    + "           (?, ?, ?, ?, ?)";
             for (Attendance att : atts) {
                 PreparedStatement stm = connection.prepareStatement(sql);
                 stm.setInt(1, att.getSid());
                 stm.setDate(2, att.getAdate());
                 stm.setInt(3, att.getTid());
                 stm.setBoolean(4, att.isPresent());
+                stm.setInt(5, att.getCid());
                 stm.executeUpdate();
             }
             connection.commit();
+            return atts;
         } catch (SQLException ex) {
             Logger.getLogger(AttendanceDBContext.class.getName()).log(Level.SEVERE, null, ex);
             try {
@@ -51,6 +54,6 @@ public class AttendanceDBContext extends DBContext<Attendance> {
                 Logger.getLogger(AttendanceDBContext.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
+        return null;
     }
 }

@@ -37,6 +37,23 @@ public class AttendanceController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Result attendance</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Done</h1>");
+            out.println("<a href=\"#\"><button type=\"button\">View List</button></a>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -76,6 +93,7 @@ public class AttendanceController extends HttpServlet {
             throws ServletException, IOException {
         Date date = Date.valueOf(request.getParameter("date"));
         int tid = Integer.parseInt(request.getParameter("tid"));
+        int cid = Integer.parseInt(request.getParameter("cid"));
         String[] sids = request.getParameterValues("id");
         ArrayList<Attendance> atts = new ArrayList<>();
         for (String id : sids) {
@@ -83,12 +101,32 @@ public class AttendanceController extends HttpServlet {
             at.setSid(Integer.parseInt(id));
             at.setAdate(date);
             at.setTid(tid);
-            at.setPresent(request.getParameter("present"+id)!=null);
+            at.setPresent(request.getParameter("present" + id) != null);
+            at.setCid(cid);
             atts.add(at);
         }
         AttendanceDBContext db = new AttendanceDBContext();
-        db.insert(atts);
-        response.getWriter().println("Done"); 
+        ArrayList<Attendance> attAdded = db.insert(atts);
+        if (attAdded != null) {
+            ClassDBContext cdb = new ClassDBContext();
+            ClassEntity attClass = cdb.getClassById(attAdded.get(0).getCid());
+            TimeDBContext tdb = new TimeDBContext();
+            Time attTime = tdb.getTimeById(attAdded.get(0).getTid());
+            StudentDBContext sdb = new StudentDBContext();
+            ArrayList<Student> stds = new ArrayList<>();
+            for (int i = 0; i < attAdded.size(); i++) {
+                Student s = sdb.getStudentById(attAdded.get(i).getSid());
+                stds.add(s);
+            }
+            request.setAttribute("attAdded", attAdded);
+            request.setAttribute("stds", stds);
+            request.setAttribute("attClass", attClass);
+            request.setAttribute("attTime", attTime);
+            request.getRequestDispatcher("view.jsp").forward(request, response);
+        } else {
+            response.sendRedirect("attendance?cid=" + cid);
+        }
+
     }
 
     /**
