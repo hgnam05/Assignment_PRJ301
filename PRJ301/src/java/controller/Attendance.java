@@ -5,12 +5,20 @@
  */
 package controller;
 
+import dal.ClassDBContext;
+import dal.StudentDBContext;
+import dal.TimeDBContext;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Date;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.ClassEntity;
+import model.Student;
+import model.Time;
 
 /**
  *
@@ -40,11 +48,17 @@ public class Attendance extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */           
-            out.println(request.getParameter("cid"));
-        }
+        int cid = Integer.parseInt(request.getParameter("cid"));
+        StudentDBContext sdb = new StudentDBContext();
+        ClassDBContext cdb = new ClassDBContext();
+        TimeDBContext tdb = new TimeDBContext();
+        ArrayList<Time> times = tdb.getAll();
+        ClassEntity c = cdb.getClassById(cid);
+        ArrayList<Student> students = sdb.getStudentByClass(cid);
+        request.setAttribute("students", students);
+        request.setAttribute("class", c);
+        request.setAttribute("times", times);
+        request.getRequestDispatcher("attendance.jsp").forward(request, response);
     }
 
     /**
@@ -58,6 +72,8 @@ public class Attendance extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        Date date = Date.valueOf(request.getParameter("date"));
+        int tid = Integer.parseInt(request.getParameter("tid"));
     }
 
     /**

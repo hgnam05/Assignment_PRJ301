@@ -17,8 +17,8 @@ import model.ClassEntity;
  *
  * @author namdh
  */
-public class ClassDBContext extends DBContext<ClassEntity>{
-    
+public class ClassDBContext extends DBContext<ClassEntity> {
+
     public ArrayList<ClassEntity> getAll() {
         ArrayList<ClassEntity> classes = new ArrayList<>();
         try {
@@ -37,5 +37,26 @@ public class ClassDBContext extends DBContext<ClassEntity>{
             Logger.getLogger(ClassDBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
         return classes;
+    }
+
+    public ClassEntity getClassById(int id) {
+        try {
+            String sql = "SELECT [cid]\n"
+                    + "      ,[name]\n"
+                    + "  FROM [Class]\n"
+                    + "WHERE [cid] = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            ClassEntity c = new ClassEntity();
+            while (rs.next()) {
+                c.setCid(rs.getInt("cid"));
+                c.setName(rs.getString("name"));
+            }
+            return c;
+        } catch (SQLException ex) {
+            Logger.getLogger(ClassDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }
