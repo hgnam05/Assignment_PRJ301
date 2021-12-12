@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.ClassEntity;
+import util.Utilities;
 
 /**
  *
@@ -42,10 +43,14 @@ public class ClassController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ClassDBContext db = new ClassDBContext();
-        ArrayList<ClassEntity> classes = db.getAll();
-        request.setAttribute("classes", classes);
-        request.getRequestDispatcher("home.jsp").forward(request, response);
+        if (Utilities.isAuthenticated(request)) {
+            ClassDBContext db = new ClassDBContext();
+            ArrayList<ClassEntity> classes = db.getAll();
+            request.setAttribute("classes", classes);
+            request.getRequestDispatcher("home.jsp").forward(request, response);
+        }else {
+            response.getWriter().println("Access denied");
+        }
     }
 
     /**

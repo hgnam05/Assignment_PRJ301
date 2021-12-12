@@ -21,6 +21,7 @@ import model.Attendance;
 import model.ClassEntity;
 import model.Student;
 import model.Time;
+import util.Utilities;
 
 /**
  *
@@ -67,17 +68,21 @@ public class AttendanceController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int cid = Integer.parseInt(request.getParameter("cid"));
-        StudentDBContext sdb = new StudentDBContext();
-        ClassDBContext cdb = new ClassDBContext();
-        TimeDBContext tdb = new TimeDBContext();
-        ArrayList<Time> times = tdb.getAll();
-        ClassEntity c = cdb.getClassById(cid);
-        ArrayList<Student> students = sdb.getStudentByClass(cid);
-        request.setAttribute("students", students);
-        request.setAttribute("class", c);
-        request.setAttribute("times", times);
-        request.getRequestDispatcher("attendance.jsp").forward(request, response);
+        if (Utilities.isAuthenticated(request)) {
+            int cid = Integer.parseInt(request.getParameter("cid"));
+            StudentDBContext sdb = new StudentDBContext();
+            ClassDBContext cdb = new ClassDBContext();
+            TimeDBContext tdb = new TimeDBContext();
+            ArrayList<Time> times = tdb.getAll();
+            ClassEntity c = cdb.getClassById(cid);
+            ArrayList<Student> students = sdb.getStudentByClass(cid);
+            request.setAttribute("students", students);
+            request.setAttribute("class", c);
+            request.setAttribute("times", times);
+            request.getRequestDispatcher("attendance.jsp").forward(request, response);
+        } else {
+            response.getWriter().println("Access denied");
+        }
     }
 
     /**
@@ -91,42 +96,45 @@ public class AttendanceController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Date date = Date.valueOf(request.getParameter("date"));
-        int tid = Integer.parseInt(request.getParameter("tid"));
-        int cid = Integer.parseInt(request.getParameter("cid"));
-        String[] sids = request.getParameterValues("id");
-        ArrayList<Attendance> atts = new ArrayList<>();
-        for (String id : sids) {
-            Attendance at = new Attendance();
-            at.setSid(Integer.parseInt(id));
-            at.setAdate(date);
-            at.setTid(tid);
-            at.setPresent(request.getParameter("present" + id) != null);
-            at.setCid(cid);
-            atts.add(at);
-        }
-        AttendanceDBContext db = new AttendanceDBContext();
-        ArrayList<Attendance> attAdded = db.insert(atts);
-        if (attAdded != null) {
-            ClassDBContext cdb = new ClassDBContext();
-            ClassEntity attClass = cdb.getClassById(attAdded.get(0).getCid());
-            TimeDBContext tdb = new TimeDBContext();
-            Time attTime = tdb.getTimeById(attAdded.get(0).getTid());
-            StudentDBContext sdb = new StudentDBContext();
-            ArrayList<Student> stds = new ArrayList<>();
-            for (int i = 0; i < attAdded.size(); i++) {
-                Student s = sdb.getStudentById(attAdded.get(i).getSid());
-                stds.add(s);
+        if (Utilities.isAuthenticated(request)) {
+            Date date = Date.valueOf(request.getParameter("date"));
+            int tid = Integer.parseInt(request.getParameter("tid"));
+            int cid = Integer.parseInt(request.getParameter("cid"));
+            String[] sids = request.getParameterValues("id");
+            ArrayList<Attendance> atts = new ArrayList<>();
+            for (String id : sids) {
+                Attendance at = new Attendance();
+                at.setSid(Integer.parseInt(id));
+                at.setAdate(date);
+                at.setTid(tid);
+                at.setPresent(request.getParameter("present" + id) != null);
+                at.setCid(cid);
+                atts.add(at);
             }
-            request.setAttribute("attAdded", attAdded);
-            request.setAttribute("stds", stds);
-            request.setAttribute("attClass", attClass);
-            request.setAttribute("attTime", attTime);
-            request.getRequestDispatcher("view.jsp").forward(request, response);
+            AttendanceDBContext db = new AttendanceDBContext();
+            ArrayList<Attendance> attAdded = db.insert(atts);
+            if (attAdded != null) {
+                ClassDBContext cdb = new ClassDBContext();
+                ClassEntity attClass = cdb.getClassById(attAdded.get(0).getCid());
+                TimeDBContext tdb = new TimeDBContext();
+                Time attTime = tdb.getTimeById(attAdded.get(0).getTid());
+                StudentDBContext sdb = new StudentDBContext();
+                ArrayList<Student> stds = new ArrayList<>();
+                for (int i = 0; i < attAdded.size(); i++) {
+                    Student s = sdb.getStudentById(attAdded.get(i).getSid());
+                    stds.add(s);
+                }
+                request.setAttribute("attAdded", attAdded);
+                request.setAttribute("stds", stds);
+                request.setAttribute("attClass", attClass);
+                request.setAttribute("attTime", attTime);
+                request.getRequestDispatcher("view.jsp").forward(request, response);
+            } else {
+                response.sendRedirect("attendance?cid=" + cid);
+            }
         } else {
-            response.sendRedirect("attendance?cid=" + cid);
+            response.getWriter().println("Access denied");
         }
-
     }
 
     /**
